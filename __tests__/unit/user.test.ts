@@ -21,7 +21,9 @@ describe('User', () => {
     const sut = createSut();
 
     const user = sut.create({
-      name: 'Robert',
+      firstName: 'Robert',
+      lastName: 'Hai',
+      userName: 'GameMaker',
       email: 'robert@example.com',
       password_hash: '123456',
     });

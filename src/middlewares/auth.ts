@@ -6,7 +6,7 @@ import { UserRepository } from '../repositories/UserRepository';
 
 interface TokenPayload {
     id: string
-    email: string
+    userName: string
     iat: number
     exp: number
 }
@@ -24,21 +24,21 @@ export default function authMiddleware(
 
   try {
     const data = jwt.verify(token, process.env.SECRET_TOKEN as string);
-    const { id, email } = data as TokenPayload;
+    const { id, userName } = data as TokenPayload;
 
     const userRepository = getCustomRepository(UserRepository);
 
-    const userExists = userRepository.findOne({ where: { email } });
+    const userExists = userRepository.findOne({ where: { userName } });
 
     if (!userExists) {
       return res.status(401).send('User invalid');
     }
     req.userId = id;
-    req.userEmail = email;
+    req.userName = userName;
     return next();
   } catch (e) {
     return res.status(401).json({
-      errors: ['Token expirado ou inválido.'],
+      error: 'Expired or invalid token.',
     });
   }
 }

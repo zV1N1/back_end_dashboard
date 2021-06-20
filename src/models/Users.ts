@@ -4,6 +4,7 @@ import {
 import { v4 as uuid } from 'uuid';
 
 import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 @Entity('users')
 class User {
@@ -11,7 +12,13 @@ class User {
     readonly id: string
 
     @Column()
-    name: string
+    userName: string
+
+    @Column()
+    firstName: string
+
+    @Column()
+    lastName: string
 
     @Column()
     email: string
@@ -35,6 +42,15 @@ class User {
     @BeforeUpdate()
     hashPassword() {
       this.password_hash = bcryptjs.hashSync(this.password_hash, 8);
+    }
+
+    checkPassword(password: string): Promise<boolean> {
+      return bcryptjs.compare(password, this.password_hash);
+    }
+
+    generateToken() {
+      const token = jwt.sign({ id: this.id, userName: this.userName }, process.env.SECRET_TOKEN as string, { expiresIn: '1d' });
+      return token;
     }
 }
 
